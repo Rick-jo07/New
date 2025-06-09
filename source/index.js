@@ -37,10 +37,11 @@ app.use(
       },
     })
   );  
-app.use(errorrHandler);
+
 app.use(morgan('dev'));
 app.use('/auth', AuthRoute);
 app.use('/Data', router);
+app.use(errorrHandler);
 const port = process.env.PORT
 
 
