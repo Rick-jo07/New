@@ -18,7 +18,7 @@ export const Register = async (req,res) => {
         });
         console.log(user)
         req.session.user = {
-            id : user.id,
+            id : user.userid,
             email : user.email,
             name : user.name
         }
@@ -31,22 +31,28 @@ export const Register = async (req,res) => {
 
 export const Login = async (req,res) => {
     const {email, password} = req.body;
+    console.log(email)
     try {
         const user = await prisma.User.findUnique({
             where : {email}
         });
-        if(!user) res.status(400).json({message : "Invalid Credentials"});
+        if(!user) res.status(400).json({message : "No user Found"});
         const valid = await bcrypt.compare(password, user.password)
         if(!valid) res.status(400).json({message : "Invalid Credentials"})
         req.session.user = {
-            id : user.id,
+            id : user.userid,
             email : user.email,
             name : user.name
         }
         res.status(200).json({message: 'Logged In'})
     }
     catch (err) {
-        res.status(500).json({message : 'Server Error'})
+        console.error('Login error:', err);
+    
+        // This won't get called unless an error occurs before res was sent
+        if (!res.headersSent) {
+          res.status(500).json({ message: 'Server Error' });
+        }
     }
 }
 
