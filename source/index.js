@@ -12,7 +12,10 @@ import { errorrHandler } from './Middleware/errorHandler.js';
 dotenv.config();
 
 const app = express();
-let redisClient = createClient();
+let redisClient =createClient({
+  url: process.env.REDIS_URL, // Use the connection string from Railway or local .env
+});
+
 redisClient.connect().catch(console.error);
 
 // Initialize Store.
@@ -20,7 +23,7 @@ let redisStore = new RedisStore({
     client : redisClient, 
     prefix : "myApp:",
 })
-
+  
 app.use(cors());
 app.use(express.json());
 app.use(
